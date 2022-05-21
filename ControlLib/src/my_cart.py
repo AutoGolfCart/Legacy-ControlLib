@@ -201,10 +201,11 @@ class MyCart:
                 self.can.write(self.direction_controller.str_disable())
 
         else:
-            if self.vars["steering_motor_en"] == 0:
-                self.can.write(self.direction_controller.str_enable())
-
             self.can.write(self.direction_controller.str_left(power))
+
+            if self.vars["steering_motor_en"] == 0:
+                time.sleep(.1)
+                self.can.write(self.direction_controller.str_enable())
 
     # Turn right
     def turnRight(self, power = 128):
@@ -213,10 +214,11 @@ class MyCart:
                 self.can.write(self.direction_controller.str_disable())
 
         else:
-            if self.vars["steering_motor_en"] == 0:
-                self.can.write(self.direction_controller.str_enable())
-
             self.can.write(self.direction_controller.str_right(power))
+
+            if self.vars["steering_motor_en"] == 0:
+                time.sleep(.1)
+                self.can.write(self.direction_controller.str_enable())
 
     def stopTurn(self):
         self.can.write(self.direction_controller.str_disable())
@@ -229,10 +231,11 @@ class MyCart:
             else:
                 self.rightSignal()
 
-        if self.vars["steering_motor_en"] != 1:
-            self.can.write(self.direction_controller.str_enable())
-
         self.can.write(self.direction_controller.str_goTo(position, power))
+
+        if self.vars["steering_motor_en"] != 1:
+            time.sleep(.1)
+            self.can.write(self.direction_controller.str_enable())
 
     # ----------------------------
     # Accel
@@ -241,29 +244,26 @@ class MyCart:
     # Enagage Brakes NOTE: Not recommended, use completestop instead
     def brake(self):
         # Disable the accelerator
+        self.can.write(self.drive_controller.disable())
+        time.sleep(.1)
         self.setSpeed(0)
-        self.can.write(self.drive_controller.disable)
-
+        time.sleep(.1)
+        
         # Brake
         self.can.write(self.direction_controller.brk_pull())
+        time.sleep(.1)
         self.can.write(self.direction_controller.brk_enable())
 
     # Disengages brakes
     def disengageBrakes(self):
         self.can.write(self.direction_controller.brk_push())
+        time.sleep(.1)
         self.can.write(self.direction_controller.brk_enable())
 
     # Come to a complete stop
     def completeStop(self):
-        if self.vars["brake_pos"] <= 10:
-            return
-        else:
-            self.brake()
-
-            while self.vars["brake_pos"] > 10:
-                time.sleep(.1)
-
-            time.sleep(5)
+        self.brake()
+        time.sleep(15)
 
     # Set the accelerator speed
     def setSpeed(self, speed: int = 200):
@@ -309,6 +309,7 @@ class MyCart:
         
         # Change mode
         self.can.write(self.drive_controller.forwards())
+        time.sleep(.1)
 
         # Disengage brake pull
         self.disengageBrakes()
@@ -323,6 +324,7 @@ class MyCart:
 
         # Change mode
         self.can.write(self.drive_controller.reverse())
+        time.sleep(.1)
 
         # Disengage brake pull
         self.disengageBrakes()
@@ -335,6 +337,7 @@ class MyCart:
     def rightSignal(self):
         if self.vars["right_signal"] == 0:
             self.can.write(self.accessory_controller.right_signal_blink())
+
         else:
             self.can.write(self.accessory_controller.right_signal_off())
 
@@ -342,18 +345,21 @@ class MyCart:
     def leftSignal(self):
         if self.vars["left_signal"] == 0:
             self.can.write(self.accessory_controller.left_signal_blink())
+
         else:
             self.can.write(self.accessory_controller.left_signal_off())
         
     # Stop signalling
     def stopSignal(self):
         self.can.write(self.accessory_controller.left_signal_off())
+        time.sleep(.1)
         self.can.write(self.accessory_controller.right_signal_off())
 
     # Hazards 
     def hazards(self):
         if self.vars["tail_light"] == 0:
             self.can.write(self.accessory_controller.tail_lights_blink())
+
         else:
             self.can.write(self.accessory_controller.tail_lights_off())
 
