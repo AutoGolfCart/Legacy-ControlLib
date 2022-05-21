@@ -37,13 +37,13 @@ class Drive_Controller:
         return f"({self.can_address}) 12 10 10 0 0 0 0 0"
 
     def enable(self):
-        return f"({self.can_address}) 10 10 15 2 0 0 0 0"
+        return f"({self.can_address}) 10 10 14 2 0 0 0 0"
 
     def disable(self):
-        return f"({self.can_address}) 10 10 15 1 0 0 0 0"
+        return f"({self.can_address}) 10 10 14 1 0 0 0 0"
 
     def reqEn(self):
-        return f"({self.can_address}) 12 10 15 0 0 0 0 0"
+        return f"({self.can_address}) 12 10 14 0 0 0 0 0"
 
     def reqPedalPos(self):
         return f"({self.can_address} 12 10 13 0 0 0 0 0"
